@@ -63,6 +63,11 @@ class DetailViewController: UITableViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         refresh()
+        
+        
+        Alamofire.request("www.example.com").responseJSON { (respones) in
+            
+        }
     }
 
     // MARK: IBActions

@@ -170,7 +170,7 @@ open class SessionManager {
     {
         self.delegate = delegate
         self.session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
-
+        
         commonInit(serverTrustPolicyManager: serverTrustPolicyManager)
     }
 
@@ -234,8 +234,11 @@ open class SessionManager {
         var originalRequest: URLRequest?
 
         do {
+            // 创建URLRequest
             originalRequest = try URLRequest(url: url, method: method, headers: headers)
+            // 参数编码
             let encodedURLRequest = try encoding.encode(originalRequest!, with: parameters)
+            // 调用func request(_ urlRequest: URLRequestConvertible) -> DataRequest方法
             return request(encodedURLRequest)
         } catch {
             return request(originalRequest, failedWith: error)
@@ -254,12 +257,22 @@ open class SessionManager {
         var originalRequest: URLRequest?
 
         do {
+            // 转换为 URLRequest
             originalRequest = try urlRequest.asURLRequest()
+            // 创建 一个遵守`TaskConvertible`协议的类型.
+            // Requestable是一个结构体
+            // originalRequest!可以强制解包, 这里一定有值
+            // originalTask: TaskConvertible
             let originalTask = DataRequest.Requestable(urlRequest: originalRequest!)
-
+            
+            // 创建`URLSessionDataTask`
+            // 在创建过程中如果adapter不为nil会对URLrequest进行修改.具体修改取决于遵守`RequestAdapter`协议的类型 协议方法的实现.
+            // task: URLSessionDataTask
             let task = try originalTask.task(session: session, adapter: adapter, queue: queue)
+            // 创建DataRequest
+            // request: DataRequest
             let request = DataRequest(session: session, requestTask: .data(originalTask, task))
-
+            //
             delegate[task] = request
 
             if startRequestsImmediately { request.resume() }

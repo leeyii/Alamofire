@@ -361,6 +361,7 @@ open class DataRequest: Request {
 
         func task(session: URLSession, adapter: RequestAdapter?, queue: DispatchQueue) throws -> URLSessionTask {
             do {
+                // 对URLRequest转换操作,如果有`RequestAdapter` 
                 let urlRequest = try self.urlRequest.adapt(using: adapter)
                 return queue.sync { session.dataTask(with: urlRequest) }
             } catch {
